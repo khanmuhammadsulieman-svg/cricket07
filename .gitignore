@@ -1,0 +1,12 @@
+.netlify/
+dist/
+game/
+site/play/build/
+output/
+__pycache__/
+.DS_Store
+*.pyc
+.env*
+!.env.example
+bio-dist/
+mods/world-2026/world-pack.bin

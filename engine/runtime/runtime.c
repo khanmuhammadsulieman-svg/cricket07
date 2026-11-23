@@ -1,6 +1,7 @@
 /* Runtime for recompiled code: guest memory, PE image loading, function dispatch, traps. */
 #include "runtime.h"
 
+#include <errno.h>
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -247,8 +248,22 @@ void rdtsc(CPU *c) {
 /* ------------------------------------------------------------------ imports */
 
 typedef struct { char name[96]; GuestFn fn; } ImportSlot;
-static ImportSlot g_imports[4096];  /* PE imports + GetProcAddress results + COM method slots */
+/* 8192 to match MAX_SLOTS in host/com.c, which indexes its parallel g_slots[] by the same number:
+   the two were 4096 and 8192, so imports past 4096 would have run off the end of this one while the
+   other still looked fine. import_slot_ok() below refuses to go past the end either way. */
+#define MAX_IMPORTS 8192
+static ImportSlot g_imports[MAX_IMPORTS];  /* PE imports + GetProcAddress results + COM method slots */
 static uint32_t g_nimports;
+
+/* Writing past g_imports[] corrupts whatever follows it in BSS and crashes somewhere unrelated later,
+   which is the least readable failure there is -- especially on a phone with no tombstone. Stop here
+   with a name instead. */
+static void import_slot_ok(const char *what) {
+    if (g_nimports < MAX_IMPORTS) return;
+    fprintf(stderr, "[runtime] out of import slots: %u used, all of them, adding \"%s\"\n", g_nimports, what);
+    rc_rung("oom-imports");
+    exit(1);
+}
 
 static void unimplemented_import(CPU *c) {
     /* The return address on the stack identifies the caller; the slot is found from the IAT
@@ -268,6 +283,7 @@ static GuestFn find_handler(const char *name) {
 }
 
 uint32_t add_dynamic_import(const char *name, GuestFn fn) {
+    import_slot_ok(name);
     ImportSlot *sl = &g_imports[g_nimports];
     snprintf(sl->name, sizeof sl->name, "%s", name);
     sl->fn = fn;
@@ -332,6 +348,7 @@ int load_image(const char *path, LoadedImage *out) {
         for (uint32_t k = 0;; k++) {
             uint32_t thunk = R32(image_base + ilt + 4 * k);
             if (!thunk) break;
+            import_slot_ok(dll);
             ImportSlot *s = &g_imports[g_nimports];
             if (thunk & 0x80000000u)
                 snprintf(s->name, sizeof s->name, "%s!#%u", dll, thunk & 0xffff);
@@ -369,8 +386,16 @@ void runtime_init(CPU *c) {
     if (!g_mem) { fprintf(stderr, "cannot allocate guest memory\n"); exit(1); }
     if ((uintptr_t)g_mem < brk0) memset(g_mem, 0, brk0 - (uintptr_t)g_mem < size ? brk0 - (uintptr_t)g_mem : size);
 #else
-    g_mem = mmap(NULL, GUEST_SPACE + 0x10000, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANON | MAP_NORESERVE, -1, 0);
-    if (g_mem == MAP_FAILED) { perror("mmap 4GiB guest space"); exit(1); }
+    g_mem = mmap(NULL, (size_t)GUEST_SPACE + 0x10000, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANON | MAP_NORESERVE, -1, 0);
+    /* The reservation is address space, not memory: MAP_NORESERVE means pages are committed only as
+       the game touches them. It still has to be one contiguous run, which is the whole risk on a
+       32-bit process -- 1.25 GiB out of a ~3 GiB user address space already holding the Java heap,
+       ART and every loaded library. Say how much was asked for, so a failure in logcat is legible. */
+    if (g_mem == MAP_FAILED) {
+        fprintf(stderr, "cannot reserve %llu MiB of contiguous guest address space: %s\n",
+                (unsigned long long)((GUEST_SPACE + 0x10000) >> 20), strerror(errno));
+        exit(1);
+    }
 #endif
     memset(c, 0, sizeof *c);
     c->esp = GUEST_STACK_TOP;

@@ -1,0 +1,15 @@
+{
+  "name": "cricket07-whymickywhy",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "node server.mjs",
+    "start": "node server.mjs",
+    "build": "node --check server.mjs",
+    "lint": "node --check server.mjs"
+  },
+  "dependencies": {
+    "express": "^5.1.0"
+  }
+}
