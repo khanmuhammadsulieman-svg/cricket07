@@ -453,9 +453,13 @@ async function boot() {
   // the tab would never be used, and the player would wait for 1.2 GB twice.
   if (gateState() === 'home') { updateGate(); return; }
   if (!crossOriginIsolated) {
+    if (window.__c07CoiReloading) {
+      status('Enabling cross-origin isolation…');
+      return;
+    }
     status(window.self !== window.top
       ? 'Cross-origin isolation is disabled inside embedded preview frames. Open /play/ directly in a full browser tab to launch Cricket 07.'
-      : 'This page needs cross-origin isolation (COOP/COEP headers; see recomp/web/serve.py).');
+      : 'This page needs cross-origin isolation (COOP/COEP headers).');
     return;
   }
   if (!navigator.gpu) {

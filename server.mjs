@@ -16,19 +16,18 @@ const LICENSES_DIR = path.join(__dirname, 'LICENSES');
 const ENGINE_WEB_BUILD = path.join(__dirname, 'engine', 'build_web', 'www');
 const PLAY_GAME_MANIFEST = path.join(SITE_DIR, 'play', 'game', 'manifest.json');
 
-// Security headers matching netlify.toml
+// Security & Cross-Origin Isolation headers matching vercel.json
 app.use((req, res, next) => {
+  res.setHeader('Cross-Origin-Opener-Policy', 'same-origin');
+  res.setHeader('Cross-Origin-Embedder-Policy', 'require-corp');
+  res.setHeader('Cross-Origin-Resource-Policy', 'same-origin');
   res.setHeader('X-Content-Type-Options', 'nosniff');
   res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
   res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
   next();
 });
 
-// Cross-Origin Isolation (COOP / COEP / CORP) required by WebAssembly threads & WebGPU under /play/*
 app.use('/play', (req, res, next) => {
-  res.setHeader('Cross-Origin-Opener-Policy', 'same-origin');
-  res.setHeader('Cross-Origin-Embedder-Policy', 'require-corp');
-  res.setHeader('Cross-Origin-Resource-Policy', 'same-origin');
   res.setHeader('Cache-Control', 'no-cache');
   next();
 });
