@@ -452,7 +452,12 @@ async function boot() {
   // its own storage. So show the Add to Home Screen steps (the gate) and download nothing here: a copy made in
   // the tab would never be used, and the player would wait for 1.2 GB twice.
   if (gateState() === 'home') { updateGate(); return; }
-  if (!crossOriginIsolated) { status('This page needs cross-origin isolation (COOP/COEP headers; see recomp/web/serve.py).'); return; }
+  if (!crossOriginIsolated) {
+    status(window.self !== window.top
+      ? 'Cross-origin isolation is disabled inside embedded preview frames. Open /play/ directly in a full browser tab to launch Cricket 07.'
+      : 'This page needs cross-origin isolation (COOP/COEP headers; see recomp/web/serve.py).');
+    return;
+  }
   if (!navigator.gpu) {
     if (IOS) noWebGPUiOS();
     else status('This browser has no WebGPU. Use a current Chrome, Edge or Safari.');
