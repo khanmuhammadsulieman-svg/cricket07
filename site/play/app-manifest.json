@@ -1,5 +1,5 @@
 {
-  "name": "Cricket 07 — The Micky Edit",
+  "name": "Cricket 07 — Sulieman Khan Edition",
   "short_name": "Cricket 07",
   "id": "./",
   "start_url": "./",
@@ -7,8 +7,8 @@
   "display": "fullscreen",
   "display_override": ["fullscreen", "standalone"],
   "orientation": "landscape",
-  "background_color": "#070b08",
-  "theme_color": "#070b08",
+  "background_color": "#090b10",
+  "theme_color": "#090b10",
   "icons": [
     { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
     { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }

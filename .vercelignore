@@ -1,0 +1,10 @@
+.git
+.netlify
+.vercel
+node_modules
+dist
+output
+bio-dist
+__pycache__
+.DS_Store
+*.pyc

@@ -1,5 +1,5 @@
 {
   "name": "Cricket 07 Browser Edition",
-  "description": "Playable 3D Cricket 07 browser game with 2026 international squads, all 10 IPL teams, and OG 2006 legends. Features real-time 3D batting, bowling, timing mechanics, broadcast HUD, and wagon wheel scorecards.",
+  "description": "Cricket 07 — Sulieman Khan Edition. Browser port landing page, 2026 international and IPL roster packs, and WebGPU launcher.",
   "requestFramePermissions": []
 }

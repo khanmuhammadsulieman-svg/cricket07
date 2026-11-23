@@ -99,7 +99,7 @@ byId('share-page').addEventListener('click', async () => {
   const url = location.origin + '/';
   const button = byId('share-page');
   try {
-    if (navigator.share) await navigator.share({ title: 'One more over? Cricket 07 by Micky', text: 'OG Cricket 07, India 2026 and all ten IPL teams. Play and get the source.', url });
+    if (navigator.share) await navigator.share({ title: 'Cricket 07 — Sulieman Khan Edition', text: 'Classic Cricket 07 in the browser with 2026 international squads and all ten IPL teams.', url });
     else { await copyText(url); button.textContent = 'Link copied ✓'; byId('share-status').textContent = 'Page link copied.'; }
   } catch (error) {
     if (error.name !== 'AbortError') { button.textContent = 'Copy your address bar link'; byId('share-status').textContent = 'Sharing is unavailable. Copy this page’s address to share it.'; }

@@ -6,8 +6,11 @@
   "scripts": {
     "dev": "node server.mjs",
     "start": "node server.mjs",
-    "build": "node --check server.mjs",
-    "lint": "node --check server.mjs"
+    "build": "node scripts/build.mjs",
+    "lint": "node --check server.mjs && node --check scripts/build.mjs"
+  },
+  "engines": {
+    "node": ">=18"
   },
   "dependencies": {
     "express": "^5.1.0"
