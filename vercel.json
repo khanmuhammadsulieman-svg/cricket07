@@ -3,20 +3,7 @@
   "framework": null,
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
-  "cleanUrls": false,
-  "trailingSlash": false,
-  "redirects": [
-    {
-      "source": "/play",
-      "destination": "/play/",
-      "permanent": true
-    },
-    {
-      "source": "/links",
-      "destination": "/links/",
-      "permanent": true
-    }
-  ],
+  "trailingSlash": true,
   "headers": [
     {
       "source": "/(.*)",
@@ -27,7 +14,7 @@
       ]
     },
     {
-      "source": "/play/(.*)",
+      "source": "/play/:path*",
       "headers": [
         { "key": "Cross-Origin-Opener-Policy", "value": "same-origin" },
         { "key": "Cross-Origin-Embedder-Policy", "value": "require-corp" },
@@ -36,7 +23,7 @@
       ]
     },
     {
-      "source": "/play/build/(.*)",
+      "source": "/play/build/:path*",
       "headers": [
         { "key": "Cross-Origin-Opener-Policy", "value": "same-origin" },
         { "key": "Cross-Origin-Embedder-Policy", "value": "require-corp" },
@@ -45,14 +32,14 @@
       ]
     },
     {
-      "source": "/play/mods/(.*)",
+      "source": "/play/mods/:path*",
       "headers": [
         { "key": "Cross-Origin-Resource-Policy", "value": "same-origin" },
         { "key": "Cache-Control", "value": "public, max-age=86400" }
       ]
     },
     {
-      "source": "/play/game/(.*)",
+      "source": "/play/game/:path*",
       "headers": [
         { "key": "Access-Control-Allow-Origin", "value": "*" },
         { "key": "Cross-Origin-Resource-Policy", "value": "cross-origin" },
@@ -60,7 +47,7 @@
       ]
     },
     {
-      "source": "/play/game/chunks/(.*)",
+      "source": "/play/game/chunks/:path*",
       "headers": [
         { "key": "Access-Control-Allow-Origin", "value": "*" },
         { "key": "Cross-Origin-Resource-Policy", "value": "cross-origin" },
@@ -68,7 +55,7 @@
       ]
     },
     {
-      "source": "/downloads/(.*)",
+      "source": "/downloads/:path*",
       "headers": [
         { "key": "Cache-Control", "value": "public, max-age=300" }
       ]
